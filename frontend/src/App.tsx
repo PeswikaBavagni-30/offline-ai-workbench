@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 import "./App.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
 type TestResults = {
   output: string;
   error: string;
@@ -129,7 +131,7 @@ function App() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/upload-srs", {
+      const response = await fetch(`${API_URL}/upload-srs`, {
         method: "POST",
         body: formData,
       });
@@ -155,7 +157,7 @@ function App() {
     setAnswer("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/ask", {
+      const response = await fetch(`${API_URL}/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question }),
@@ -180,7 +182,7 @@ function App() {
     setGenerating(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/generate-code", {
+      const response = await fetch(`${API_URL}/generate-code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ instruction, code }),
@@ -211,7 +213,7 @@ function App() {
     setDebugMessage("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/run-code", {
+      const response = await fetch(`${API_URL}/run-code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
@@ -253,7 +255,7 @@ function App() {
 
   async function loadProjects() {
     try {
-      const response = await fetch("http://127.0.0.1:8000/projects");
+      const response = await fetch(`${API_URL}/projects`);
       if (!response.ok) return;
       const data = await response.json();
       setProjects(data.projects || []);
@@ -277,7 +279,7 @@ function App() {
     setProjectMessage("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/save-project", {
+      const response = await fetch(`${API_URL}/save-project`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -318,7 +320,7 @@ function App() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/projects/${encodeURIComponent(name)}`
+        `${API_URL}/projects/${encodeURIComponent(name)}`
       );
 
       const data = await response.json();
@@ -366,7 +368,7 @@ function App() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/projects/${encodeURIComponent(name)}`,
+        `${API_URL}/projects/${encodeURIComponent(name)}`,
         { method: "DELETE" }
       );
 
@@ -401,7 +403,7 @@ function App() {
     setTestResults(null);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/generate-tests", {
+      const response = await fetch(`${API_URL}/generate-tests`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, instruction: testInstruction }),
@@ -443,7 +445,7 @@ function App() {
     setDebugMessage("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/run-tests", {
+      const response = await fetch(`${API_URL}/run-tests`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, tests: generatedTests }),
@@ -481,7 +483,7 @@ function App() {
     setTraceability("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/generate-traceability", {
+      const response = await fetch(`${API_URL}/generate-traceability`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -536,7 +538,7 @@ function App() {
     setDebugResult("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/debug-code", {
+      const response = await fetch(`${API_URL}/debug-code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, error: errorText }),
@@ -566,7 +568,7 @@ function App() {
     setAnalysisResult("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/analyze-code", {
+      const response = await fetch(`${API_URL}/analyze-code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
@@ -596,7 +598,7 @@ function App() {
     setDocumentation("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/generate-documentation", {
+      const response = await fetch(`${API_URL}/generate-documentation`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
@@ -624,7 +626,7 @@ function App() {
     setFullAnalysisLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/run-full-analysis", {
+      const response = await fetch(`${API_URL}/run-full-analysis`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -671,7 +673,7 @@ function App() {
     if (!proj) return;
     try {
       const resp = await fetch(
-        `http://127.0.0.1:8000/git/status?project_name=${encodeURIComponent(proj)}`
+        `${API_URL}/git/status?project_name=${encodeURIComponent(proj)}`
       );
       if (resp.ok) {
         const data = await resp.json();
@@ -686,7 +688,7 @@ function App() {
     if (!proj) return;
     try {
       const resp = await fetch(
-        `http://127.0.0.1:8000/git/log?project_name=${encodeURIComponent(proj)}`
+        `${API_URL}/git/log?project_name=${encodeURIComponent(proj)}`
       );
       if (resp.ok) {
         const data = await resp.json();
@@ -705,7 +707,7 @@ function App() {
     setGitLoading(true);
     setGitFeedback("");
     try {
-      const resp = await fetch("http://127.0.0.1:8000/git/init", {
+      const resp = await fetch(`${API_URL}/git/init`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ project_name: projectName }),
@@ -732,7 +734,7 @@ function App() {
     setGitLoading(true);
     setGitFeedback("");
     try {
-      const resp = await fetch("http://127.0.0.1:8000/git/commit", {
+      const resp = await fetch(`${API_URL}/git/commit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

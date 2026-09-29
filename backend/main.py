@@ -25,10 +25,19 @@ app = FastAPI(
 )
 
 
+
+allowed_origins = [
+    origin.strip()
+    for origin in os.getenv(
+        "ALLOWED_ORIGINS",
+        "http://127.0.0.1:5173,http://localhost:5173"
+    ).split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -1037,4 +1046,4 @@ Rules:
     except Exception as error:
         return {
             "message": f"Code analysis failed: {str(error)}"
-        }
+        }

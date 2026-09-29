@@ -1,0 +1,44 @@
+﻿services:
+
+  # ============================================================
+  # OLLAMA
+  # ============================================================
+  ollama:
+    image: ollama/ollama:latest
+    container_name: offline-ai-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  # ============================================================
+  # FASTAPI BACKEND
+  # ============================================================
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: offline-ai-backend
+    restart: unless-stopped
+
+    depends_on:
+      - ollama
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+
+    volumes:
+      - chroma_data:/app/chroma_db
+      - documents_data:/app/documents
+      - projects_data:/app/projects
+
+volumes:
+  ollama_data:
+  chroma_data:
+  documents_data:
+  projects_data:
